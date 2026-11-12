@@ -2,7 +2,7 @@ import { colors } from "@/theme";
 import { ReactNode } from "react";
 import { Pressable, StyleSheet, View, ViewStyle } from "react-native";
 
-export type ButtonVariant = "primary" | "secondary" | "outline"
+export type ButtonVariant = "primary" | "secondary" | "outline" | "light"
 
 type ButtonProps = {
     children: ReactNode,
@@ -24,15 +24,10 @@ export function Button({
         primary: buttonStyles.primary,
         secondary: buttonStyles.secondary,
         outline: buttonStyles.outline,
+        light: buttonStyles.light,
     }
 
     const rippleColor = variant === "primary" ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.1)";
-
-    /**
-     *  O uso de um container por fora do Pressable se dá pela característica do ripple effect
-     *  nativo do android não adaptar seu formato ao border radius do próprio pressable
-     *  forçando, assim, que uma View container defina o estilo
-     */
 
     return (
         <View style={[
@@ -49,10 +44,8 @@ export function Button({
                 }}
                 style={({ pressed }) => [
                     buttonStyles.pressableArea,
-                    /**
-                     * IOS não possui ripple nativo, por isso o fallback se torna, Apenas, o estilo padrão do pressed
-                     */
-                    pressed && !disabled ? buttonStyles.pressed : null 
+                    pressed && !disabled ? buttonStyles.pressed : null,
+                    pressed && !disabled && variant === "light" ? buttonStyles.lightPressed : null,
                 ]}
             >
                 {children}
@@ -86,6 +79,12 @@ const buttonStyles = StyleSheet.create({
         borderColor: colors.border["DEFAULT"],
         backgroundColor: "#fff",
         borderWidth: 1
+    },
+    light: {
+        backgroundColor: "transparent",
+    },
+    lightPressed: {
+        backgroundColor: colors.primary["20"],
     },
     disabled: {
         opacity: 0.5,

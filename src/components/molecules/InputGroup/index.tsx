@@ -1,6 +1,7 @@
 import { colors, constants, fonts } from "@/theme";
-import { ReactNode, useEffect, useRef, useState } from "react"
-import { StyleSheet, TextInput, TextInputProps, View } from "react-native";
+import { ReactNode, useState } from "react"
+import { Pressable, StyleSheet, TextInput, TextInputProps, View } from "react-native";
+import { Eye, EyeOff } from "lucide-react-native";
 
 
 
@@ -17,6 +18,8 @@ export function InputGroup({
 }: InputGroupProps) {
 
     const [focused, setFocus] = useState(false);
+    const isPassword = !!rest.secureTextEntry;
+    const [hidden, setHidden] = useState(true);
 
 
 return (
@@ -37,11 +40,25 @@ return (
                     placeholderTextColor={colors.muted_foreground["DEFAULT"]}
                     onFocus={() => setFocus(true)}
                     onBlur={() => setFocus(false)}
-    
+
                     {...rest}
+                    secureTextEntry={isPassword && hidden}
                 />
-    
-    
+
+                {isPassword && (
+                    <Pressable
+                        onPress={() => setHidden((value) => !value)}
+                        hitSlop={8}
+                        style={styles.addonContainer}
+                        accessibilityRole="button"
+                        accessibilityLabel={hidden ? "Mostrar senha" : "Ocultar senha"}
+                    >
+                        {hidden
+                            ? <EyeOff size={18} color={colors.muted_foreground["DEFAULT"]} />
+                            : <Eye size={18} color={colors.muted_foreground["DEFAULT"]} />}
+                    </Pressable>
+                )}
+
                 {rightElements && (
                     <View style={styles.addonContainer}>
                         {rightElements}
@@ -64,7 +81,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
     },
     focused: {
-        borderColor: colors.muted_foreground["DEFAULT"]
+        borderColor: colors.primary["DEFAULT"]
     },
     addonContainer: {
         justifyContent: "center",
@@ -77,6 +94,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: colors.foreground["DEFAULT"],
         fontFamily: fonts.sans.regular,
+        outlineStyle: "solid",
+        outlineWidth: 0,
     }
 });
 

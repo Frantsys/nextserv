@@ -1,11 +1,12 @@
-import { Button } from "@/components/Button";
-import { LoginForm } from "@/components/LoginForm";
-import { SignUpForm } from "@/components/SignUpForm";
+import { Button } from "@/components/atoms/Button";
+import { LoginForm } from "@/components/organisms/LoginForm";
+import { SignUpForm } from "@/components/organisms/SignUpForm";
 import { assets, colors, constants, fonts } from "@/theme";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
-import { Keyboard, KeyboardAvoidingView, StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
+import { KeyboardAvoidingView, StyleSheet, Text, View } from "react-native";
+import { DismissKeyboard } from "@/components/atoms/DismissKeyboard";
 
 
 
@@ -14,21 +15,14 @@ export default function SignUp() {
     const router = useRouter();
 
     return(
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <DismissKeyboard>
             <KeyboardAvoidingView
             behavior="padding"
             style={styles.container}>
             <View style={styles.header}>
                 <Button
                     variant="secondary"
-                    styles={{
-                        zIndex: 6,
-                        width: 48,
-                        height: 48,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center"
-                    }}
+                    styles={styles.backButton}
 
                     onPress={() => router.replace("/")}
                 >
@@ -38,15 +32,9 @@ export default function SignUp() {
 
                 <Image
                     source={assets.map}
-                    style={{ width: "100%", height: "100%", position: "absolute" }}
+                    style={styles.background}
                 />
-                <View style={{
-                    position: "absolute",
-                    width: "100%",
-                    height: "100%",
-                    backgroundColor: colors.primary["60"],
-                    zIndex: 2
-                }} />
+                <View style={styles.overlay} />
                 <View style={styles.logo}>
                     <Image
                         source={assets.logo}
@@ -69,12 +57,32 @@ export default function SignUp() {
                         <SignUpForm />
                </View>
             </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
+        </DismissKeyboard>
     )
 }
 
 
 const styles = StyleSheet.create({
+    backButton: {
+        zIndex: 6,
+        width: 48,
+        height: 48,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    background: {
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+    },
+    overlay: {
+        position: "absolute",
+        width: "100%",
+        height: "100%",
+        backgroundColor: colors.primary["60"],
+        zIndex: 2,
+    },
     container: {
         flex: 1,
         display: "flex",
@@ -85,7 +93,7 @@ const styles = StyleSheet.create({
     header: {
         width: "100%",
         height: "6%",
-        borderWidth: 1,
+        zIndex: 6,
         padding: 24,
         paddingInline: 24
     },

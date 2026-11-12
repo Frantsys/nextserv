@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Stack, useRouter } from "expo-router"; // Importamos useRouter
+import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
-import { View, ActivityIndicator, Text } from "react-native";
+import { View, ActivityIndicator, Text, StyleSheet } from "react-native";
 import { colors, fonts } from "@/theme";
 
 import {
@@ -41,20 +41,15 @@ export default function RootLayout() {
 
       if (isAuthenticated) {
         router.replace("/(tabs)/home");
-      } else {
-        router.replace("/");
       }
     }
   }, [fontsLoaded, error, isAuthenticated]);
 
   if (!fontsLoaded && !error) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background["DEFAULT"] }}>
+      <View style={styles.loading}>
         <ActivityIndicator size="large" color={colors.primary["DEFAULT"]} />
-        <Text style={{ 
-          marginTop: 16, 
-          fontFamily: fonts.sans.medium 
-        }}>Carregando aplicativo...</Text>
+        <Text style={styles.loadingText}>Carregando aplicativo...</Text>
       </View>
     );
   }
@@ -92,3 +87,16 @@ export default function RootLayout() {
     </Stack>
   );
 }
+
+const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.background["DEFAULT"],
+  },
+  loadingText: {
+    marginTop: 16,
+    fontFamily: fonts.sans.medium,
+  },
+});
