@@ -1,56 +1,104 @@
-# Welcome to your Expo app 👋
+# NextServ
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+App mobile para encontrar estabelecimentos próximos e agendar serviços. Feito com React Native e Expo.
 
-## Get started
+## Stack
 
-1. Install dependencies
+- [Expo SDK 57](https://docs.expo.dev/versions/v57.0.0/) com [Expo Router](https://docs.expo.dev/router/introduction/) (rotas por arquivos em `src/app`)
+- React Native 0.86, React 19, TypeScript
+- Ícones: `lucide-react-native` · Fontes: DM Sans e Manrope (`@expo-google-fonts`)
 
-   ```bash
-   npm install
-   ```
+## Telas
 
-2. Start the app
+| Rota | Tela |
+|---|---|
+| `/` | Boas-vindas |
+| `/login` | Login |
+| `/signup` | Cadastro |
+| `/home` | Início: locais próximos |
+| `/schedule` | Agenda: calendário do mês e agendamentos do dia |
+| `/search` | Busca de serviços e locais |
 
-   ```bash
-   npx expo start
-   ```
+As três últimas ficam em `src/app/(tabs)` e são navegadas pela `TabBar`.
 
-In the output, you'll find options to open the app in a
+**Acesso:** o login e o cadastro só validam os campos no app (email válido, senha com 6+ caracteres, nome de usuário com 3+ e senhas iguais). Qualquer dado nesse formato entra. Também há o botão **Entrar como visitante**. Ainda não existe backend: os dados das telas vêm de `src/mocks.ts`.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Estrutura
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+src/
+├── app/                 páginas (rotas do Expo Router)
+├── components/          componentes no padrão Atomic Design
+│   ├── atoms/           Button, Badge, DismissKeyboard
+│   ├── molecules/       InputGroup, GoogleAuthButton, EstablishmentCard
+│   └── organisms/       LoginForm, SignUpForm, TabBar
+├── mocks.ts             dados de exemplo
+├── theme.ts             cores, fontes e assets
+├── types.ts             tipos (DTOs)
+└── validation.ts        validação dos formulários
+assets/nextserv/         logo, ícones, splash e imagens do app
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Use o alias `@/` nos imports, por exemplo `@/components/atoms/Button`.
 
-### Other setup steps
+## Como rodar
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Instale as dependências:
 
-## Learn more
+```bash
+npm install
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### No navegador
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npm run web
+```
 
-## Join the community
+### No celular Android (development build)
 
-Join our community of developers creating universal apps.
+O projeto usa o SDK 57. O Expo Go da Play Store é para o SDK 58, então ele **não** abre este projeto. Use uma development build.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Requisitos (Windows):
+
+- [Android Studio](https://developer.android.com/studio) com Android SDK, Platform-Tools e Build-Tools
+- **JDK 21.** O JDK 25 que vem com o Android Studio quebra a compilação do CMake das bibliotecas nativas.
+- **CMake 3.30 ou mais novo** (SDK Manager → SDK Tools → CMake). O 3.22.1 entra em ciclo (`build.ninja still dirty`) no Windows. Depois do primeiro `prebuild`, aponte o build para ele em `android/local.properties`:
+
+  ```properties
+  cmake.dir=C\:\\Users\\<usuario>\\AppData\\Local\\Android\\Sdk\\cmake\\3.31.6
+  ```
+
+Com o celular conectado por USB e a depuração USB ativa:
+
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-21"; npm run android
+```
+
+Isso instala o app no celular. Depois disso, só é preciso recompilar quando mudar alguma dependência nativa, o ícone ou o splash. No dia a dia, basta subir o Metro e encaminhar a porta pelo USB:
+
+```bash
+npx expo start --dev-client
+```
+
+```bash
+adb reverse tcp:8081 tcp:8081
+```
+
+### APK de release (sem depender do computador)
+
+Gera um APK com o código embutido, assinado com a chave de teste (`debug.keystore`):
+
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-21"; npx expo run:android --variant release
+```
+
+O APK fica em `android/app/build/outputs/apk/release/app-release.apk`. Para publicar na Play Store, é preciso configurar uma chave de assinatura própria.
+
+A pasta `android/` é gerada pelo Expo (`npx expo prebuild`) e não é versionada.
+
+## Pendências conhecidas
+
+- `assets/nextserv/gray-map.png` (fundo das telas de boas-vindas, login e cadastro) tem marca d'água do Adobe Stock e precisa ser trocado por uma imagem licenciada antes de publicar.
+- O mapa das telas Início e Busca é uma imagem estática.
+- "Esqueceu a senha?" ainda não tem ação, e a Agenda mostra só o mês atual.
