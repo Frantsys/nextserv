@@ -152,5 +152,6 @@ export const typography = {
 
 export const assets = {
   logo: require("@/assets/nextserv/main-splash-screen-icon.svg"),
-  map: require("@/assets/nextserv/gray-map.png")
+  map: require("@/assets/nextserv/gray-map.png"),
+  mapBackground: require("@/assets/nextserv/map-background.svg")
 } as const;
